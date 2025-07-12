@@ -4,6 +4,7 @@ import torch.utils.checkpoint as checkpoint
 from einops import rearrange
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 
+# Testing to check proper working on kaggle
 
 class MoEFFNGating(nn.Module):
     def __init__(self, dim, hidden_dim, num_experts):
