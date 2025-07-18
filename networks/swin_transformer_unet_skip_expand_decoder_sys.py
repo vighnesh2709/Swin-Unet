@@ -674,7 +674,7 @@ class SwinTransformerSys(nn.Module):
         # Regressor head instead of segmentation output
         flattened_dim = self.embed_dim * self.patches_resolution[0] * self.patches_resolution[1]
         self.regressor = nn.Sequential(
-            nn.Linear(flattened_dim, 4096),
+            nn.Linear(301056, 4096),
             nn.ReLU(),
             nn.Linear(4096, 8192),
             nn.ReLU(),
