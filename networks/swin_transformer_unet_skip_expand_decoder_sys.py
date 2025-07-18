@@ -728,7 +728,7 @@ class SwinTransformerSys(nn.Module):
         x = self.norm_up(x)  # [B, L, C]
 
         B, L, C = x.shape
-        print(f"Flattening: B={B}, L={L}, C={C}, L*C={L*C}")
+        # print(f"Flattening: B={B}, L={L}, C={C}, L*C={L*C}")
 
         x = x.view(B, -1)        
         x = self.regressor(x)    
