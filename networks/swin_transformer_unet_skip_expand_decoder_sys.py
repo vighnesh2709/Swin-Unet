@@ -598,7 +598,6 @@ class SwinTransformerSys(nn.Module):
         self.num_features = int(embed_dim * 2 ** (self.num_layers - 1))
         self.mlp_ratio = mlp_ratio
 
-        # Patch embedding
         self.patch_embed = PatchEmbed(
             img_size=img_size, patch_size=patch_size, in_chans=in_chans, embed_dim=embed_dim,
             norm_layer=norm_layer if self.patch_norm else None)
@@ -612,10 +611,8 @@ class SwinTransformerSys(nn.Module):
 
         self.pos_drop = nn.Dropout(p=drop_rate)
 
-        # Stochastic depth
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]
 
-        # Encoder
         self.layers = nn.ModuleList()
         for i_layer in range(self.num_layers):
             layer = BasicLayer(
@@ -634,7 +631,6 @@ class SwinTransformerSys(nn.Module):
                 use_checkpoint=use_checkpoint)
             self.layers.append(layer)
 
-        # Decoder
         self.layers_up = nn.ModuleList()
         self.concat_back_dim = nn.ModuleList()
         for i_layer in range(self.num_layers):
@@ -671,10 +667,8 @@ class SwinTransformerSys(nn.Module):
         self.norm = norm_layer(self.num_features)
         self.norm_up = norm_layer(self.embed_dim)
 
-        # Regressor head instead of segmentation output
-        flattened_dim = self.embed_dim * self.patches_resolution[0] * self.patches_resolution[1]
         self.regressor = nn.Sequential(
-            nn.Linear(301056, 1024),
+            nn.Linear(self.embed_dim, 1024),
             nn.ReLU(),
             nn.Linear(1024, 22659),
         )
@@ -727,11 +721,7 @@ class SwinTransformerSys(nn.Module):
         x = self.forward_up_features(x, x_downsample)
         x = self.norm_up(x)  # [B, L, C]
 
-        B, L, C = x.shape
-        # print(f"Flattening: B={B}, L={L}, C={C}, L*C={L*C}")
-
-        x = x.view(B, -1)        
-        x = self.regressor(x)    
-        x = x.view(-1, 7553, 3)  
+        x = x.mean(dim=1)  # Global average pooling -> (B, C)
+        x = self.regressor(x)  # (B, 22659)
+        x = x.view(-1, 7553, 3)  # Final shape: (B, 7553, 3)
         return x
-
