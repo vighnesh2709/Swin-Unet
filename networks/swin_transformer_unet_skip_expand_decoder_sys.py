@@ -678,7 +678,7 @@ class SwinTransformerSys(nn.Module):
             nn.ReLU(),
             nn.Linear(4096, 8192),
             nn.ReLU(),
-            nn.Linear(8192, =22659)  # 7556 * 3
+            nn.Linear(8192, 22659)  # 7556 * 3
         )
 
         self.apply(self._init_weights)
