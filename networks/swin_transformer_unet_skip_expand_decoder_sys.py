@@ -675,7 +675,7 @@ class SwinTransformerSys(nn.Module):
 
         self.regressor = nn.Sequential(
             nn.Linear(self.embed_dim, 1024),
-            nn.SiLU(inplace=True),
+            nn.ReLU(inplace=True),
             nn.Dropout(p=0.5),  
             nn.Linear(1024, 22659),
         )
